@@ -1,0 +1,30 @@
+question,generated_answer,reference_answer,answer_f1,true_label,nli_risk,sc_risk,ensemble_risk
+What nationality is the man whom Vladimir Kozlov won the WWE Tag Team Championship with?,Canadian.,Canadian,1.0,0,0.016801094636321068,0.20497900247573853,0.1108900485560298
+"Which building is nicknamed ""The Billionaire Building"" and hosts 92 condominiums units on top of a 210-room Hyatt Hotel: 30 Hudson Yards or One57?","One57, formerly known as Carnegie 57, is nicknamed ""The Billionaire Building"" and hosts 92 condominium units on top of a 210-room Hyatt Hotel.",One57,0.07999999999999999,1,0.0023384427186101675,0.08556628227233887,0.04395236249547452
+At which age Audrey Kathryn Lindvall's super model sister was discover by IMG scout?,14 years old.,14 years old,1.0,0,0.008938032202422619,1.7881393432617188e-07,0.0044691055081784725
+what was the birth year of the fifth governor of a British colony in north America that existed from 1632 to 1776?,1626,1626,1.0,0,0.16998374462127686,0.023086488246917725,0.09653511643409729
+What was the 2010 population of the city where The Lansing State Journal is published?,"The 2010 population of Lansing, Michigan was 114,297.","114,297",0.3636363636363636,0,0.00026871333830058575,0.4345605969429016,0.2174146551406011
+" Arthur Machen was a Welsh author and mystic of the 1890s and early 20th century well known for his leading role in creating the legend of the Angels of Mons, a popular legend about a group of angels who supposedly protected members of what army?",The British Army.,the British Army,1.0,0,0.8772487044334412,0.0,0.4386243522167206
+"Which game was created first, Bailout! The Game or Dark Tower?","Dark Tower was created first, released in 1963 by Milton Bradley Company.",Dark Tower,0.2857142857142857,1,0.9996812343597412,0.16580629348754883,0.582743763923645
+"Both the single ""Stay"" and the debut studio album ""Cloud Nine"" were developed by which Norwegian DJ and record producer?",Kygo.,Kygo,1.0,0,0.16893205046653748,-1.1920928955078125e-07,0.08446596562862396
+"The Death of General Wolfe, an oil painting, depicts a scene from which pivotal French and Indian War battle that took place outside the walls of Quebec City?",The Death of General Wolfe depicts a scene from the Battle of the Plains of Abraham.,Battle of the Plains of Abraham,0.5882352941176471,0,0.0011848993599414825,0.19165736436843872,0.0964211318641901
+Consider the eccentric Knoxville businessman with whom George Roby Dempster often staged politcal battles. In what year were they born?,"Since we don't have information on the birth year of George Roby Dempster, but we do have Orton Caswell (Cas) Walker's information. Cas Walker was born in 1902.",1902,0.07692307692307693,1,0.49363812804222107,0.35379207134246826,0.42371509969234467
+"What do the University of California, Davis and University of Oklahoma have in common?","Both the University of California, Davis and the University of Oklahoma are:
+
+1. Public institutions
+2. Research universities
+3. Land-grant universities
+4. Coeducational (accept both male and female students)",public research university,0.2222222222222222,1,0.18298132717609406,0.2624489665031433,0.22271514683961868
+Which American singer appeared in music videos for R&B group B2K and also featured on the mixtape Detroit by American rapper Big Sean? ,Jhené Aiko.,Jhené Aiko,1.0,0,0.013660873286426067,0.4855409264564514,0.24960089987143874
+Ave Satani was the theme song to which Richard Donner horror film?,"""The Omen"" (1976)",The Omen,0.8,0,0.02868848852813244,0.1571987271308899,0.09294360782951117
+How are the Ox-tongue pastry and the Youtiao cooked?,The Ox-tongue pastry (Youtiao) is deep-fried in hot oil until golden brown.,fried,0.13333333333333333,1,0.000878258899319917,0.1558821201324463,0.0783801895158831
+What is another name for the blood disorder Emmanuel Ntima Weyi founded a non-profit in support of?,Sickle-cell anemia.,Sickle-cell disease,0.6666666666666666,0,0.0014906353317201138,0.15487927198410034,0.07818495365791023
+"Terttu Nevalainen, is a Finnish linguist and the current Chair of English Philology at which organization, Nevalainen works on the History of English, English is a West Germanic language that originated from Anglo-Frisian dialects brought to Britain in the mid 5th to 7th centuries AD by Germanic invaders and settlers from what is now northwest Germany, west Denmark and the Netherlands, displacing the Celtic languages that previously predominated?",University of Helsinki.,University of Helsinki,1.0,0,0.010847794823348522,0.007529497146606445,0.009188645984977484
+"Squealer is a fictional character, a pig, in which author's book, ""Animal Farm"", in the book, he is described as merely a fat pig, but in the 1954 film, he is a pink pig, whereas in the 1999 film, Animal Farm, he is a Tamworth pig who wears a monocle? ","Squealer is a fictional character in George Orwell's ""Animal Farm"".",George Orwell,0.3076923076923077,0,0.7258255481719971,0.2033677101135254,0.46459662914276123
+"What is the name of the seventh studio album that was made by the creator of ""Amazing"" and ""Only You""?",Georgia Clay is the seventh studio album by Josh Kelley.,Georgia Clay,0.33333333333333337,0,0.000197407222003676,0.19467943906784058,0.09743842314492213
+"John Gunther and Halldór Laxness, are American?","No, they are not American. 
+
+- John Gunther was American, however the question was phrased incorrectly in that part, the statement in question should have specified they weren't American for consistency.
+
+- Halldór Laxness was Icelandic.",no,0.07142857142857142,1,0.5917937159538269,0.20663446187973022,0.39921408891677856
+Do both The Life and Times and Beth Orton originate from America?,"No, not both. The Life and Times originates from Kansas City, Missouri, which is in America, but Beth Orton is from England.",no,0.09523809523809523,1,0.0424758642911911,0.024336278438568115,0.03340607136487961

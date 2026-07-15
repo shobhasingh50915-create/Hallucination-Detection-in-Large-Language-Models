@@ -53,7 +53,7 @@ def main():
     print(f"Evaluating on {len(df)} examples, {args.n_samples} generations each")
 
     print("Loading LLM wrapper (OpenAI gpt-4o-mini)...")
-    llm = get_llm_wrapper("openai", "gpt-4o-mini")
+    llm = get_llm_wrapper("groq", "llama-3.1-8b-instant")
 
     print("Loading detectors...")
     nli_detector = NLIDetector()

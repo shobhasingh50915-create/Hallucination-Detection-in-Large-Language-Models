@@ -1,6 +1,7 @@
-"""
+﻿"""
 LLM abstraction layer - unified interface over different backends.
-Supports: local HuggingFace models (quantized, for Colab) and OpenAI API.
+Supports: local HuggingFace models (quantized, for Colab), OpenAI API,
+and Groq API (free tier, OpenAI-compatible, fast inference).
 """
 
 from abc import ABC, abstractmethod
@@ -78,11 +79,35 @@ class OpenAIWrapper(LLMWrapper):
         return response.choices[0].message.content.strip()
 
 
+class GroqWrapper(LLMWrapper):
+    """Free-tier, fast inference via Groq's OpenAI-compatible API.
+    Requires GROQ_API_KEY env var. Get a free key at console.groq.com/keys."""
+
+    def __init__(self, model_name="llama-3.1-8b-instant"):
+        from openai import OpenAI
+        api_key = os.environ.get("GROQ_API_KEY")
+        if not api_key:
+            raise ValueError("Set GROQ_API_KEY environment variable before using GroqWrapper.")
+        self.client = OpenAI(api_key=api_key, base_url="https://api.groq.com/openai/v1")
+        self.model_name = model_name
+
+    def generate(self, prompt, max_tokens=256, temperature=0.7):
+        response = self.client.chat.completions.create(
+            model=self.model_name,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=max_tokens,
+            temperature=temperature,
+        )
+        return response.choices[0].message.content.strip()
+
+
 def get_llm_wrapper(backend, model_name, **kwargs):
-    """Factory function. backend: 'huggingface' or 'openai'."""
+    """Factory function. backend: 'huggingface', 'openai', or 'groq'."""
     if backend == "huggingface":
         return HuggingFaceWrapper(model_name, **kwargs)
     elif backend == "openai":
         return OpenAIWrapper(model_name)
+    elif backend == "groq":
+        return GroqWrapper(model_name)
     else:
         raise ValueError(f"Unknown backend: {backend}")
