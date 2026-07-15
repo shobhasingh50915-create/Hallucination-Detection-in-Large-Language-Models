@@ -1,13 +1,7 @@
-"""
+﻿"""
 Ensemble evaluation: NLI detector + Self-Consistency detector on HaluEval.
-
-HaluEval's 'label' column is unpopulated in this dataset build, so ground
-truth is derived via a standard QA-hallucination proxy: token-overlap F1
-between the model's generated answer and HaluEval's reference_answer.
-Low overlap (< threshold) = treated as hallucination. This proxy is
-independent of both detectors (NLI uses context+generated-answer entailment,
-self-consistency uses embedding agreement across samples), so it's a fair
-ground truth to evaluate both against.
+Scores are min-max normalized per-detector before averaging so the ensemble
+isn't skewed by differing scales between NLI and self-consistency risk.
 """
 
 import sys
@@ -25,7 +19,6 @@ from evaluation.metrics import evaluate_detector, sweep_thresholds
 
 
 def token_f1(a, b):
-    """Simple token-overlap F1 between two strings (SQuAD-style proxy)."""
     a_toks = re.findall(r"\w+", a.lower())
     b_toks = re.findall(r"\w+", b.lower())
     if not a_toks or not b_toks:
@@ -40,10 +33,10 @@ def token_f1(a, b):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--n", type=int, default=20, help="number of HaluEval examples")
-    parser.add_argument("--n_samples", type=int, default=3, help="generations per example for self-consistency")
+    parser.add_argument("--n", type=int, default=60)
+    parser.add_argument("--n_samples", type=int, default=3)
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--f1_threshold", type=float, default=0.3, help="below this = treated as hallucination")
+    parser.add_argument("--f1_threshold", type=float, default=0.3)
     args = parser.parse_args()
 
     print("Loading HaluEval test set...")
@@ -52,7 +45,7 @@ def main():
     df = df.sample(n=min(args.n, len(df)), random_state=args.seed).reset_index(drop=True)
     print(f"Evaluating on {len(df)} examples, {args.n_samples} generations each")
 
-    print("Loading LLM wrapper (OpenAI gpt-4o-mini)...")
+    print("Loading LLM wrapper (Groq llama-3.1-8b-instant)...")
     llm = get_llm_wrapper("groq", "llama-3.1-8b-instant")
 
     print("Loading detectors...")
@@ -64,17 +57,17 @@ def main():
         print(f"  [{i+1}/{len(df)}] {row['input_text'][:60]}...")
         prompt = f"Context: {row['context']}\n\nQuestion: {row['input_text']}\nAnswer concisely."
 
-        # generate multiple responses for self-consistency
-        sc_result = sc_detector.score(llm, prompt, n_samples=args.n_samples, max_tokens=64)
+        try:
+            sc_result = sc_detector.score(llm, prompt, n_samples=args.n_samples, max_tokens=64)
+        except Exception as e:
+            print(f"    skipped (API error: {e})")
+            continue
         if sc_result["hallucination_risk"] is None:
             continue
 
-        # use the first generated response as "the" answer for NLI + ground truth
         main_answer = sc_result["responses"][0]
-
         nli_result = nli_detector.check(context=row["context"], claim=main_answer)
 
-        # ground truth proxy: does generated answer overlap with reference answer?
         f1 = token_f1(main_answer, row["reference_answer"])
         true_label = 1 if f1 < args.f1_threshold else 0
 
@@ -86,10 +79,16 @@ def main():
             "true_label": true_label,
             "nli_risk": nli_result["hallucination_risk"],
             "sc_risk": sc_result["hallucination_risk"],
-            "ensemble_risk": (nli_result["hallucination_risk"] + sc_result["hallucination_risk"]) / 2,
         })
 
     out_df = pd.DataFrame(rows)
+
+    # normalize each detector's risk score to 0-1 before combining
+    for col in ["nli_risk", "sc_risk"]:
+        mn, mx = out_df[col].min(), out_df[col].max()
+        out_df[col + "_norm"] = (out_df[col] - mn) / (mx - mn) if mx > mn else 0.0
+    out_df["ensemble_risk"] = (out_df["nli_risk_norm"] + out_df["sc_risk_norm"]) / 2
+
     out_df.to_csv("results/logs/ensemble_halueval_eval.csv", index=False)
 
     for method in ["nli_risk", "sc_risk", "ensemble_risk"]:
