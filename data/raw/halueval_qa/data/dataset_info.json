@@ -1,0 +1,44 @@
+{
+  "builder_name": "parquet",
+  "citation": "",
+  "config_name": "qa",
+  "dataset_name": "halu_eval",
+  "dataset_size": 5486422,
+  "description": "",
+  "download_size": 3751109,
+  "features": {
+    "knowledge": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "question": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "right_answer": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "hallucinated_answer": {
+      "dtype": "string",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 9237531,
+  "splits": {
+    "data": {
+      "name": "data",
+      "num_bytes": 5486422,
+      "num_examples": 10000,
+      "dataset_name": "halu_eval"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}

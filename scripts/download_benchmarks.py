@@ -1,6 +1,5 @@
 """
 Step 1: Download benchmark datasets for hallucination detection.
-This script downloads TruthfulQA first (we'll add more later).
 """
 
 from datasets import load_dataset
@@ -24,7 +23,18 @@ def download_truthfulqa():
         print("Best answer:", example["best_answer"])
         print("Incorrect answers:", example["incorrect_answers"])
 
+
+def download_halueval():
+    print("Downloading HaluEval...")
+    ds = load_dataset("pminervini/HaluEval", "qa")
+    save_path = os.path.join(RAW_DIR, "halueval_qa")
+    ds.save_to_disk(save_path)
+    print(f"Saved to {save_path}")
+    print(ds)
+
+
 if __name__ == "__main__":
     os.makedirs(RAW_DIR, exist_ok=True)
     download_truthfulqa()
+    download_halueval()
     print("\nDone!")
