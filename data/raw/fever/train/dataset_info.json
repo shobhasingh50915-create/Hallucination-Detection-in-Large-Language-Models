@@ -1,0 +1,72 @@
+{
+  "builder_name": "parquet",
+  "citation": "",
+  "config_name": "default",
+  "dataset_name": "nli_fever",
+  "dataset_size": 111109691,
+  "description": "",
+  "download_size": 55903265,
+  "features": {
+    "cid": {
+      "dtype": "int64",
+      "_type": "Value"
+    },
+    "fid": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "premise": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "hypothesis": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "verifiable": {
+      "dtype": "int64",
+      "_type": "Value"
+    },
+    "fever_gold_label": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "label": {
+      "names": [
+        "entailment",
+        "neutral",
+        "contradiction"
+      ],
+      "_type": "ClassLabel"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 167012956,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 94164753,
+      "num_examples": 208346,
+      "dataset_name": "nli_fever"
+    },
+    "test": {
+      "name": "test",
+      "num_bytes": 8444925,
+      "num_examples": 19998,
+      "dataset_name": "nli_fever"
+    },
+    "dev": {
+      "name": "dev",
+      "num_bytes": 8500013,
+      "num_examples": 19998,
+      "dataset_name": "nli_fever"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}

@@ -15,14 +15,6 @@ def download_truthfulqa():
     print(f"Saved to {save_path}")
     print(ds)
 
-    print("\n--- Let's look at 2 real examples ---")
-    for i in range(2):
-        example = ds["validation"][i]
-        print(f"\nExample {i+1}:")
-        print("Question:", example["question"])
-        print("Best answer:", example["best_answer"])
-        print("Incorrect answers:", example["incorrect_answers"])
-
 
 def download_halueval():
     print("Downloading HaluEval...")
@@ -33,8 +25,17 @@ def download_halueval():
     print(ds)
 
 
+def download_fever():
+    print("Downloading FEVER...")
+    ds = load_dataset("pietrolesci/nli_fever")
+    save_path = os.path.join(RAW_DIR, "fever")
+    ds.save_to_disk(save_path)
+    print(f"Saved to {save_path}")
+    print(ds)
+
 if __name__ == "__main__":
     os.makedirs(RAW_DIR, exist_ok=True)
     download_truthfulqa()
     download_halueval()
+    download_fever()
     print("\nDone!")
