@@ -18,3 +18,5 @@ nltk
 rouge-score
 bert-score
 jupyter
+accelerate
+
