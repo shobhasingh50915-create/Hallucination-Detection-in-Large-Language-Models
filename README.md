@@ -1,4 +1,4 @@
-﻿# Hallucination Detection in Large Language Models
+# Hallucination Detection in Large Language Models
 
 ## Overview
 This project detects hallucinations in LLM outputs using three implemented detection methods — NLI-based contradiction detection, self-consistency checking, and semantic similarity — combined into a normalized ensemble, evaluated on FEVER and HaluEval.
@@ -48,6 +48,23 @@ A third detector was added: cosine similarity between the embedded generated cla
 - 3 of 5 originally planned detection methods are implemented (NLI, self-consistency, semantic similarity); retrieval-augmented verification and uncertainty-based methods remain stubs.
 
 ## Project structure
+```
+hallucination-detection-llm/
+├── config/
+├── data/
+├── src/
+│   └── detection/       # nli_based_detection.py, self_consistency.py, semantic_similarity.py (implemented);
+│                         # retrieval_verification.py, uncertainity_methods.py (stubs)
+├── api/
+├── notebooks/
+├── tests/
+├── scripts/              # evaluate_nli_on_fever.py, evaluate_ensemble_on_halueval.py,
+│                          # evaluate_semantic_similarity_on_fever.py, evaluate_ensemble_3way_halueval.py
+├── results/logs/          # nli_fever_eval.csv, ensemble_halueval_eval.csv,
+│                          # semantic_similarity_fever_eval.csv, ensemble_3way_halueval_eval.csv
+└── docs/
+```
+
 ## Installation
 ```bash
 pip install -r requirements.txt
