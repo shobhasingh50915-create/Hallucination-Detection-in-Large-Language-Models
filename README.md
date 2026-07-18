@@ -70,6 +70,17 @@ A fifth detector narrows the source context to its single most relevant sentence
 - All 5 originally planned detection methods are implemented; no further methods currently planned.
 
 ## Project structure
+- `config/` -- configuration files
+- `data/` -- FEVER and HaluEval benchmark data
+- `src/detection/` -- nli_based_detection.py, self_consistency.py, semantic_similarity.py, uncertainity_methods.py, retrieval_verification.py (all implemented)
+- `api/` -- API layer
+- `notebooks/` -- exploratory notebooks
+- `tests/` -- test suite
+- `scripts/` -- evaluate_nli_on_fever.py, evaluate_ensemble_on_halueval.py, evaluate_semantic_similarity_on_fever.py, evaluate_ensemble_3way_halueval.py, evaluate_ensemble_4way_halueval.py, evaluate_ensemble_5way_halueval.py, generate_results_plots.py
+- `results/logs/` -- nli_fever_eval.csv, ensemble_halueval_eval.csv, semantic_similarity_fever_eval.csv, ensemble_3way_halueval_eval.csv, ensemble_4way_halueval_eval.csv, ensemble_5way_halueval_eval.csv
+- `results/plots/` -- halueval_auroc_comparison.png
+- `docs/` -- documentation
+
 ## Installation
 ```bash
 pip install -r requirements.txt
@@ -81,8 +92,8 @@ python scripts/evaluate_nli_on_fever.py
 python scripts/evaluate_ensemble_on_halueval.py
 python scripts/evaluate_ensemble_4way_halueval.py
 python scripts/evaluate_ensemble_5way_halueval.py
+python scripts/generate_results_plots.py
 ```
 
 ## Author
 **Shobhakumari Singh**
-
