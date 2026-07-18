@@ -15,6 +15,8 @@ All 5 originally planned detection methods are now implemented.
 
 ## Results
 
+![AUROC comparison of all detectors and ensembles on HaluEval](results/plots/halueval_auroc_comparison.png)
+
 ### NLI detector on FEVER (n=200)
 | Metric | Value |
 |---|---|
@@ -83,3 +85,4 @@ python scripts/evaluate_ensemble_5way_halueval.py
 
 ## Author
 **Shobhakumari Singh**
+
