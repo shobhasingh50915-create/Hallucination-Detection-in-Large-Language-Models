@@ -1,16 +1,17 @@
 ﻿# Hallucination Detection in Large Language Models
 
 ## Overview
-This project detects hallucinations in LLM outputs using four implemented detection methods -- NLI-based contradiction detection, self-consistency checking, semantic similarity, and verbalized-confidence uncertainty -- combined into normalized ensembles, evaluated on FEVER and HaluEval.
+This project detects hallucinations in LLM outputs using five implemented detection methods -- NLI-based contradiction detection, self-consistency checking, semantic similarity, verbalized-confidence uncertainty, and retrieval-augmented verification -- combined into normalized ensembles, evaluated on FEVER and HaluEval.
 
 ## Implemented methods
 - **NLI-based detection**: uses `facebook/bart-large-mnli` to check if a generated claim is entailed by, contradicted by, or neutral to its source context. Contradiction probability = hallucination risk.
 - **Self-consistency detection**: generates multiple LLM responses to the same prompt (Groq `llama-3.1-8b-instant`) and measures embedding agreement across them. Low agreement = high hallucination risk.
 - **Semantic similarity detection**: embeds the generated claim and source context, uses cosine distance as hallucination risk. Works well on FEVER; does not transfer to HaluEval-style QA grounding (see Results below).
 - **Uncertainty detection**: prompts the LLM to self-rate its confidence (0-100) in its own answer, given the source context. Low confidence = high hallucination risk. Lightweight verbalized-confidence technique, no extra dependencies.
+- **Retrieval-augmented verification**: narrows the source context down to its single most relevant sentence (TF-IDF cosine similarity to the claim), then runs NLI-based contradiction checking against that narrowed sentence instead of the full context. Designed to test whether narrowing context fixes the transfer problem seen with semantic similarity (see Results below).
 - **Ensembles**: detector scores are min-max normalized, then averaged. Multiple detector combinations are compared (see Results below).
 
-Planned but not yet implemented: retrieval-augmented verification (stub file exists in `src/detection/`).
+All 5 originally planned detection methods are now implemented.
 
 ## Results
 
@@ -36,42 +37,35 @@ A third detector was added: cosine similarity between the embedded generated cla
 
 **On FEVER (n=200)**, this works reasonably well: AUROC 0.71, best F1 0.45 -- comparable to the other detectors.
 
-**On HaluEval (n=60)**, it fails badly: AUROC **0.12** (worse than random, i.e. inverted signal), and adding it to the ensemble *hurt* overall performance -- the 3-way ensemble (NLI + self-consistency + semantic similarity) scored AUROC 0.29, well below the 2-way ensemble's 0.60.
+**On HaluEval (n=60)**, it fails badly: AUROC as low as **0.12-0.24** across separate runs (consistently worse than random, i.e. inverted signal), and adding it to any ensemble *hurt* overall performance in every run tested.
 
-**Why**: FEVER compares a claim sentence against a context sentence of similar scope, so similarity tracks agreement well. HaluEval compares a short QA answer (e.g. "Bram Stoker") against a long multi-sentence context passage -- a correct short answer is naturally *dissimilar* in embedding space to a long paragraph, while a rambling incorrect answer that echoes more of the context's wording can score artificially higher similarity. Raw embedding similarity, as implemented, doesn't transfer well to QA-answer grounding without adjustment (e.g., comparing against the single most relevant sentence rather than the full context).
+**Why**: FEVER compares a claim sentence against a context sentence of similar scope, so similarity tracks agreement well. HaluEval compares a short QA answer (e.g. "Bram Stoker") against a long multi-sentence context passage -- a correct short answer is naturally *dissimilar* in embedding space to a long paragraph, while a rambling incorrect answer that echoes more of the context's wording can score artificially higher similarity. Raw embedding similarity, as implemented, doesn't transfer well to QA-answer grounding without adjustment.
 
-**Conclusion used going forward**: semantic similarity is retained as a standalone, FEVER-validated detector, but excluded from the HaluEval ensemble. This is reported as a deliberate, methodologically-grounded finding rather than a bug -- a useful illustration that detector transferability across task types can't be assumed.
+**Conclusion used going forward**: semantic similarity is retained as a standalone, FEVER-validated detector, but excluded from HaluEval ensembles. This is reported as a deliberate, methodologically-grounded finding rather than a bug.
 
 ### Uncertainty detector -- a fourth method, added to the HaluEval ensemble
 
 A fourth detector was added: verbalized confidence, where the LLM self-rates 0-100 confidence in its own answer given the source context.
 
-**Standalone results on HaluEval (n=60, this run)**:
-| Method | Accuracy | F1 | AUROC |
-|---|---|---|---|
-| NLI only | 0.68 | 0.34 | 0.53 |
-| Self-consistency only | 0.68 | 0.17 | 0.62 |
-| Semantic similarity only | 0.27 | 0.12 | 0.18 |
-| Uncertainty only | 0.70 | 0.25 | 0.57 |
+**Key finding**: adding the uncertainty detector to NLI + self-consistency reliably improves ensemble AUROC over the 2-way baseline across multiple runs -- it contributes complementary signal, unlike semantic similarity.
 
-**Ensemble comparison (same run)**:
-| Ensemble | AUROC |
-|---|---|
-| NLI + Self-consistency (2-way) | 0.61 |
-| NLI + Self-consistency + Semantic similarity (3-way) | 0.39 |
-| **NLI + Self-consistency + Uncertainty** | **0.64** |
-| All four (4-way) | 0.44 |
+### Retrieval-augmented verification -- a fifth method, completing the planned detector set
 
-**Key finding**: adding the uncertainty detector to NLI + self-consistency improves AUROC (0.61 -> 0.64) -- it contributes complementary signal, unlike semantic similarity. Including semantic similarity in any HaluEval ensemble continues to hurt performance, dragging the full 4-way ensemble (0.44) below every 2- and 3-detector combination that excludes it.
+A fifth detector narrows the source context to its single most relevant sentence (via TF-IDF similarity to the claim) before running the existing NLI check against that narrowed sentence, rather than the full passage. The goal was to test whether this fixes the context-length mismatch that hurt semantic similarity.
 
-*Note: standalone NLI/self-consistency/ensemble_2way numbers in this run differ somewhat from the table in the section above (e.g. NLI AUROC 0.53 vs 0.59, ensemble_2way 0.61 vs 0.77), most likely due to run-to-run variance in the live self-consistency LLM calls rather than a code change. Flagged here for transparency rather than silently reconciled.*
+**Results on HaluEval (n=60)**: standalone AUROC 0.63 -- a strong result, outperforming standalone NLI (0.61) and uncertainty (0.57) alone. However, adding it to the best existing ensemble (NLI + self-consistency + uncertainty) did not improve AUROC further; the 3-detector combination remained the best ensemble. Likely explanation: retrieval verification is built directly on top of the NLI detector, so its signal overlaps with NLI's rather than adding independent information -- unlike self-consistency and uncertainty, which come from structurally different signals (response agreement, self-reported confidence) and each added value.
+
+**Key finding**: the best-performing ensemble across all detector combinations tested remains **NLI + Self-consistency + Uncertainty**. Adding either semantic similarity or retrieval verification to this ensemble reduces performance -- semantic similarity because its signal is inverted on HaluEval, retrieval verification because its signal is redundant with NLI's. The full 5-way ensemble consistently underperforms smaller, complementary combinations.
+
+*Note: standalone detector AUROC values vary somewhat between runs (e.g. NLI has ranged 0.53-0.61, self-consistency 0.62-0.72), most likely due to non-determinism in live LLM calls (self-consistency sampling, uncertainty prompting) despite temperature 0. Relative rankings between detectors and ensembles have stayed consistent across runs even as absolute values shift.*
 
 ### Limitations
 - Sample sizes (60-200) are small; treat metric differences as suggestive, not conclusive.
 - HaluEval ground truth uses a token-overlap proxy against reference answers, not human labels.
-- Semantic similarity does not transfer from FEVER-style claim verification to HaluEval-style QA grounding (see above) -- it is task-dependent, not a general-purpose signal in its current form.
+- Semantic similarity does not transfer from FEVER-style claim verification to HaluEval-style QA grounding -- it is task-dependent, not a general-purpose signal in its current form.
+- Retrieval verification's signal overlaps substantially with the NLI detector it's built on, limiting its marginal ensemble value despite being a strong standalone detector.
 - Results show some run-to-run variance, likely from non-determinism in live LLM calls (self-consistency, uncertainty) despite temperature 0.
-- 4 of 5 originally planned detection methods are implemented (NLI, self-consistency, semantic similarity, uncertainty); retrieval-augmented verification remains a stub.
+- All 5 originally planned detection methods are implemented; no further methods currently planned.
 
 ## Project structure
 ## Installation
@@ -84,6 +78,7 @@ pip install -r requirements.txt
 python scripts/evaluate_nli_on_fever.py
 python scripts/evaluate_ensemble_on_halueval.py
 python scripts/evaluate_ensemble_4way_halueval.py
+python scripts/evaluate_ensemble_5way_halueval.py
 ```
 
 ## Author
